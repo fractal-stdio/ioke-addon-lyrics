@@ -1,0 +1,7 @@
+# Versoes travadas (licencas permissivas: MIT, Apache-2.0, BSD).
+requests==2.34.2
+certifi==2026.7.22
+charset-normalizer==3.5.1
+idna==3.20
+urllib3==2.8.0
+syncedlyrics==1.0.1

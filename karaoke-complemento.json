@@ -1,0 +1,20 @@
+{
+  "formato": 1,
+  "api": 1,
+  "id": "letras-extras",
+  "nome": {"pt-BR": "Letras extras", "en": "Extra lyrics"},
+  "descricao": {"pt-BR": "Mais fontes de letras sincronizadas: NetEase (muitas palavra a palavra) e Musixmatch.", "en": "More synced lyrics sources: NetEase (many word by word) and Musixmatch."},
+  "autor": "ioke-addon-lyrics",
+  "versao": "1.0.0",
+  "app_minimo": "1.0.0-alpha.6",
+  "python": "3.12",
+  "entrada": "complemento.py",
+  "dependencias": "requirements.txt",
+  "oferece": ["fonte_letras"],
+  "icone": "lyrics",
+  "celular": false,
+  "opcoes": [
+    {"id": "netease", "tipo": "sim_nao", "rotulo": {"pt-BR": "NetEase", "en": "NetEase"}, "padrao": true},
+    {"id": "musixmatch", "tipo": "sim_nao", "rotulo": {"pt-BR": "Musixmatch", "en": "Musixmatch"}, "padrao": true}
+  ]
+}
