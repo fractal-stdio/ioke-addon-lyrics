@@ -1,8 +1,7 @@
-"""NetEase e Musixmatch: letras sincronizadas (e palavra a palavra, quando tem).
+"""NetEase: letras sincronizadas (e palavra a palavra, quando tem).
 
 - NetEase (music.163.com): boa cobertura de musicas internacionais e, em muitas, o tempo de cada
   PALAVRA (formato "yrc", convertido para LRC enhanced).
-- Musixmatch (pelo syncedlyrics): 1 resultado, palavra a palavra quando tem.
 
 Letras palavra a palavra ficam no formato LRC enhanced:
     [00:07.61]<00:07.61>Toss <00:08.24>your <00:08.75>dirty <00:09.20>shoes<00:09.95>
@@ -144,33 +143,6 @@ def netease_lyrics(song_id, words=True):
 _CREDIT_WORDS = r"(?:作词|作曲|编曲|制作人|制作|混音|母带|和声|吉他|贝斯|鼓|录音|监制|出品|词|曲)\s*[:：]"
 _NETEASE_CREDIT_RE = re.compile(r"^\s*(?:\[[^\]]*\])+\s*" + _CREDIT_WORDS)
 _NETEASE_CREDIT_TEXT = re.compile(r"^\s*" + _CREDIT_WORDS)
-
-
-def musixmatch_search(query):
-    try:
-        import syncedlyrics
-    except ImportError:
-        return []
-    # palavra a palavra quando o Musixmatch tem ("richsync"); senao, por linha
-    try:
-        text = syncedlyrics.search(query, providers=["Musixmatch"], enhanced=True)
-    except Exception:  # noqa: BLE001
-        text = None
-    if not has_words(text):
-        text = syncedlyrics.search(query, providers=["Musixmatch"]) or text
-    if not text:
-        return []
-    return [{
-        "source": "musixmatch",
-        "id": query,
-        "artist": "",
-        "title": f"Melhor resultado para \"{query}\"",
-        "album": "",
-        "duration": None,
-        "synced": is_synced(text),
-        "words": has_words(text),
-        "text": text,
-    }]
 
 
 def _check_netease(results, limit=10):

@@ -1,5 +1,7 @@
-"""Complemento "Letras extras" para o IOkê: NetEase e Musixmatch como fontes de letras
-(API 1, pelo SDK karaoke_complemento.py)."""
+"""Complemento "Letras extras" para o IOkê: o NetEase como fonte de letras (muitas palavra a palavra)
+(API 1, pelo SDK karaoke_complemento.py).
+
+O Musixmatch saiu na 1.1.0: ele passou a recusar o acesso sem conta (o token vem zerado) e nao devolvia mais nada."""
 import logging
 from concurrent.futures import ThreadPoolExecutor
 
@@ -8,7 +10,6 @@ from karaoke_complemento import Complemento, Erro
 
 log = logging.getLogger("complemento")
 comp = Complemento()
-_musixmatch = {}  # consulta -> texto (a busca do Musixmatch ja traz a letra)
 
 
 def _ligada(fonte):
@@ -22,22 +23,12 @@ def _netease(consulta):
             for it in itens]
 
 
-def _mxm(consulta):
-    out = []
-    for it in letras.musixmatch_search(consulta):
-        _musixmatch[consulta] = it["text"]
-        titulo = f'Melhor resultado para "{consulta}"' if comp.idioma == "pt-BR" else f'Best match for "{consulta}"'
-        out.append({"fonte": "musixmatch", "id": consulta, "titulo": titulo, "artista": "", "album": "",
-                    "duracao": None, "sincronizada": it["synced"], "palavras": it["words"]})
-    return out
-
-
 @comp.letras_buscar
 def buscar(dados):
     consulta = str(dados.get("texto") or f"{dados.get('artista') or ''} {dados.get('musica') or ''}").strip()
     if not consulta:
         return []
-    tarefas = [f for f, ok in ((_netease, _ligada("netease")), (_mxm, _ligada("musixmatch"))) if ok]
+    tarefas = [f for f, ok in ((_netease, _ligada("netease")),) if ok]
     resultados = []
     with ThreadPoolExecutor(max_workers=max(1, len(tarefas))) as pool:
         for fut in [pool.submit(f, consulta) for f in tarefas]:
@@ -53,11 +44,6 @@ def obter(fonte, lid):
     try:
         if fonte == "netease":
             return letras.netease_lyrics(lid)
-        if fonte == "musixmatch":
-            if lid in _musixmatch:
-                return _musixmatch[lid]
-            itens = letras.musixmatch_search(lid)
-            return itens[0]["text"] if itens else ""
     except Exception as exc:  # noqa: BLE001
         raise Erro(("Não consegui baixar a letra: " if comp.idioma == "pt-BR" else "Couldn't get the lyrics: ")
                    + str(exc)[:200]) from None
